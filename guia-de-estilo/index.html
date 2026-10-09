@@ -1,0 +1,1053 @@
+<title>Rio Negro Log — Guia de Estilo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;1,700&family=Poppins:wght@400;500;600;700&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: faixa escura de abertura (o rio) com régua de cota; depois um guia em coluna única com navegação fixa no topo. */
+:root {
+  /* Paleta da marca — constantes, iguais nos dois temas */
+  --agua-preta: #0F0D0B;   /* o Rio Negro visto de perto */
+  --tanino:     #3A2617;   /* a cor de chá que os taninos dão à água */
+  --ouro:       #E0A54B;   /* dourado da marca, o sol batendo na água */
+  --ouro-fundo: #80653B;   /* dourado envelhecido, já usado no site atual */
+  --solimoes:   #C8A27C;   /* a água barrenta do Encontro das Águas */
+  --carvao:     #373536;   /* cinza do logotipo */
+  --mata:       #2E6B4F;
+  --alerta:     #B9761E;
+  --critico:    #B4432F;
+
+  /* Faixa do rio (sempre escura) */
+  --rio-0: #0F0D0B;
+  --rio-1: #1B1612;
+  --rio-fg: #F3ECE2;
+  --rio-muted: #B8AC9E;
+
+  /* Tokens semânticos — tema claro */
+  --bg: #F7F4EF;
+  --surface: #FFFFFF;
+  --surface-2: #EFE9E0;
+  --fg: #1E1A17;
+  --muted: #675E55;
+  --line: #E1D9CD;
+  --accent: var(--ouro);
+  --accent-ink: #7A5A24;   /* dourado legível sobre fundo claro */
+  --on-accent: #1B1612;
+  --ok: var(--mata);
+  --warn: var(--alerta);
+  --crit: var(--critico);
+  --code-bg: #1B1612;
+  --code-fg: #EFE6D8;
+
+  /* Tipografia */
+  --font-titulo: "Montserrat", "Segoe UI", system-ui, sans-serif;
+  --font-destaque: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --font-texto: "Nunito Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+
+  /* Movimento */
+  --dur-rapida: 200ms;
+  --dur-base: 600ms;
+  --dur-lenta: 900ms;
+  --ease-correnteza: cubic-bezier(.22, .8, .24, 1);
+  --ease-mare: cubic-bezier(.65, 0, .35, 1);
+  --stagger: 90ms;
+
+  /* Espaço, raio, sombra */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 72px;
+  --r-campo: 6px; --r-card: 12px; --r-pilula: 999px;
+  --sombra: 0 1px 2px rgb(30 20 10 / .06), 0 8px 24px -12px rgb(30 20 10 / .18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12100E; --surface: #1C1815; --surface-2: #26201B; --fg: #EFE8DE; --muted: #A79D91;
+    --line: #322A24; --accent-ink: #E9B868; --code-bg: #0B0908; --code-fg: #EFE6D8;
+    --sombra: 0 1px 2px rgb(0 0 0 / .4), 0 10px 28px -14px rgb(0 0 0 / .7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12100E; --surface: #1C1815; --surface-2: #26201B; --fg: #EFE8DE; --muted: #A79D91;
+  --line: #322A24; --accent-ink: #E9B868; --code-bg: #0B0908; --code-fg: #EFE6D8;
+  --sombra: 0 1px 2px rgb(0 0 0 / .4), 0 10px 28px -14px rgb(0 0 0 / .7);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-texto); font-size: 17px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--font-titulo); text-wrap: balance; margin: 0; line-height: 1.12; }
+p { margin: 0; }
+a { color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+code, pre { font-family: var(--font-mono); }
+.wrap { max-width: 1120px; margin-inline: auto; padding-inline: max(16px, 4vw); }
+
+/* ---------- Navegação ---------- */
+.topnav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+}
+.topnav .wrap { display: flex; align-items: center; gap: var(--s5); padding-block: 10px; }
+.topnav strong { font-family: var(--font-titulo); font-weight: 800; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.topnav strong span { color: var(--accent-ink); }
+.topnav nav { display: flex; gap: var(--s4); overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.topnav nav a {
+  font-family: var(--font-destaque); font-weight: 500; font-size: 13px; color: var(--muted);
+  text-decoration: none; white-space: nowrap; padding-block: 4px;
+}
+.topnav nav a:hover { color: var(--fg); }
+
+/* ---------- Abertura (o rio) ---------- */
+.hero { position: relative; background: linear-gradient(180deg, var(--rio-1), var(--rio-0) 70%); color: var(--rio-fg); overflow: hidden; isolation: isolate; }
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s7); align-items: end; padding-block: 72px 64px; }
+.hero .logo { width: 150px; height: auto; display: block; margin-bottom: var(--s6); }
+.eyebrow {
+  font-family: var(--font-destaque); font-weight: 600; font-size: 12px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent-ink);
+}
+.hero .eyebrow { color: var(--ouro); }
+.hero h1 { font-size: clamp(38px, 6.4vw, 76px); font-weight: 800; letter-spacing: -.02em; margin-block: var(--s4) var(--s5); max-width: 13ch; }
+.hero h1 .w { display: inline-block; }
+.hero h1 em { font-style: italic; color: var(--ouro); font-weight: 700; }
+.hero .lead { color: var(--rio-muted); max-width: 54ch; font-size: 18px; }
+.hero .meta { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); margin-top: var(--s6); font-family: var(--font-destaque); font-size: 13px; color: var(--rio-muted); }
+.hero .meta b { color: var(--rio-fg); font-weight: 600; }
+
+/* Régua de cota */
+.regua { display: grid; grid-template-columns: auto 34px; gap: 10px; height: 340px; }
+.regua-escala { position: relative; width: 132px; font-family: var(--font-destaque); font-size: 11px; color: var(--rio-muted); }
+.regua-escala span { position: absolute; right: 0; transform: translateY(50%); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.regua-escala span.rec { color: var(--ouro); font-weight: 500; }
+.regua-tubo {
+  position: relative; border: 1px solid rgb(243 236 226 / .25); border-radius: 4px; overflow: hidden;
+  background: repeating-linear-gradient(to top, rgb(243 236 226 / .22) 0 1px, transparent 1px calc(100% / 22));
+}
+.regua-agua {
+  position: absolute; inset: auto 0 0 0; height: var(--nivel, 65%);
+  background: linear-gradient(180deg, var(--ouro) 0 2px, rgb(224 165 75 / .35) 2px, rgb(58 38 23 / .9));
+  transform-origin: bottom;
+}
+.regua-leitura { grid-column: 1 / -1; font-family: var(--font-destaque); }
+.regua-leitura .num { font-size: 40px; font-weight: 600; line-height: 1; color: var(--rio-fg); font-variant-numeric: tabular-nums; }
+.regua-leitura .num small { font-size: 18px; color: var(--ouro); margin-left: 4px; }
+.regua-leitura p { font-size: 12px; color: var(--rio-muted); margin-top: 6px; max-width: 24ch; line-height: 1.4; }
+.regua-col { display: grid; gap: var(--s4); }
+
+/* Sequência de entrada da abertura */
+.hero.play .anim-seq { animation: correnteza var(--dur-base) var(--ease-correnteza) both; animation-delay: calc(var(--i, 0) * var(--stagger) + 120ms); }
+.hero.play .regua-agua { animation: mare-sobe 1600ms var(--ease-mare) 300ms both; }
+
+/* ---------- Seções ---------- */
+section.bloco { padding-block: var(--s8) 0; scroll-margin-top: 64px; }
+section.bloco:last-of-type { padding-bottom: var(--s8); }
+.sec-head { display: grid; gap: var(--s3); margin-bottom: var(--s6); max-width: 680px; }
+.sec-head h2 { font-size: clamp(28px, 3.6vw, 40px); font-weight: 800; letter-spacing: -.015em; }
+.sec-head p { color: var(--muted); }
+h3.sub { font-size: 20px; font-weight: 700; margin-block: var(--s7) var(--s4); }
+.nota { font-size: 14px; color: var(--muted); }
+.divisor-onda { display: block; width: 100%; height: 18px; color: var(--line); margin-top: var(--s8); }
+
+/* Conceito */
+.conceito { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s5); }
+.conceito > div { border-top: 2px solid var(--accent); padding-top: var(--s4); display: grid; gap: var(--s2); align-content: start; }
+.conceito h3 { font-size: 18px; font-weight: 700; }
+.conceito p { color: var(--muted); font-size: 16px; }
+
+/* Cores */
+.cores { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: var(--s4); }
+.cor { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; display: grid; grid-template-rows: 112px auto; }
+.cor .amostra { background: var(--c); position: relative; }
+.cor .amostra.borda { box-shadow: inset 0 -1px 0 var(--line); }
+.cor .info { padding: var(--s3) var(--s4) var(--s4); display: grid; gap: 2px; }
+.cor .info b { font-family: var(--font-titulo); font-size: 15px; font-weight: 700; }
+.cor .info code { font-size: 12px; color: var(--muted); }
+.cor .info span { font-size: 13px; color: var(--muted); line-height: 1.45; margin-top: 4px; }
+.copiar-hex { all: unset; cursor: pointer; font-family: var(--font-mono); font-size: 12px; color: var(--accent-ink); justify-self: start; }
+.copiar-hex:focus-visible { outline: 2px solid var(--accent); }
+
+.encontro-faixa {
+  margin-top: var(--s5); border-radius: var(--r-card); height: 120px; position: relative; overflow: hidden;
+  background: linear-gradient(100deg, var(--agua-preta) 0 46%, var(--tanino) 50%, var(--solimoes) 54% 100%);
+  display: flex; align-items: flex-end; justify-content: space-between; padding: var(--s4) var(--s5);
+  font-family: var(--font-destaque); font-size: 13px; font-weight: 500;
+}
+.encontro-faixa span:first-child { color: var(--rio-fg); }
+.encontro-faixa span:last-child { color: var(--agua-preta); }
+.proporcao { display: flex; height: 14px; border-radius: var(--r-pilula); overflow: hidden; margin-top: var(--s4); }
+.proporcao + .legenda-prop { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5); margin-top: var(--s3); font-size: 13px; color: var(--muted); font-family: var(--font-destaque); }
+.legenda-prop i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+table.tab { width: 100%; border-collapse: collapse; font-size: 15px; }
+.tab-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-card); background: var(--surface); }
+.tab th, .tab td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.tab tr:last-child td { border-bottom: 0; }
+.tab th { font-family: var(--font-destaque); font-weight: 600; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); background: var(--surface-2); }
+.tab td code { font-size: 13px; }
+.chip-contraste { font-family: var(--font-destaque); font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: var(--r-pilula); white-space: nowrap; }
+.chip-contraste.ok { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+.chip-contraste.lim { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.par { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 30px; border-radius: 6px; font-family: var(--font-destaque); font-weight: 600; font-size: 14px; border: 1px solid var(--line); }
+
+/* Tipografia */
+.fontes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+.fonte { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s5); display: grid; gap: var(--s3); align-content: start; min-width: 0; }
+.fonte .aa { font-size: 64px; line-height: 1; color: var(--fg); }
+.fonte .papel { font-family: var(--font-destaque); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-ink); }
+.fonte h3 { font-size: 20px; font-weight: 700; }
+.fonte p { font-size: 15px; color: var(--muted); }
+.fonte .pesos { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
+
+.escala { display: grid; border-top: 1px solid var(--line); }
+.escala-linha { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: var(--s5); align-items: baseline; padding-block: var(--s5); border-bottom: 1px solid var(--line); }
+.escala-linha .spec { font-family: var(--font-mono); font-size: 12px; color: var(--muted); line-height: 1.6; }
+.escala-linha .spec b { display: block; font-family: var(--font-destaque); font-size: 13px; color: var(--fg); font-weight: 600; }
+.escala-linha .amostra { min-width: 0; overflow-wrap: anywhere; }
+.t-display { font-family: var(--font-titulo); font-weight: 800; font-size: clamp(40px, 6vw, 64px); line-height: 1.02; letter-spacing: -.02em; text-transform: uppercase; }
+.t-h1 { font-family: var(--font-titulo); font-weight: 800; font-size: clamp(32px, 4.4vw, 44px); line-height: 1.1; letter-spacing: -.015em; }
+.t-h2 { font-family: var(--font-titulo); font-weight: 700; font-size: clamp(24px, 3vw, 30px); line-height: 1.15; }
+.t-h3 { font-family: var(--font-titulo); font-weight: 600; font-size: 21px; line-height: 1.25; }
+.t-num { font-family: var(--font-destaque); font-weight: 600; font-size: 52px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--accent-ink); }
+.t-num small { font-size: 20px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+.t-chamada { font-family: var(--font-destaque); font-weight: 500; font-size: 20px; line-height: 1.45; }
+.t-chamada mark { background: linear-gradient(transparent 62%, color-mix(in srgb, var(--accent) 45%, transparent) 62%); color: inherit; padding-inline: 2px; }
+.t-corpo { font-size: 17px; line-height: 1.65; max-width: 62ch; }
+.t-legenda { font-family: var(--font-destaque); font-weight: 600; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+/* Logo */
+.logos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
+.logo-caixa { border-radius: var(--r-card); border: 1px solid var(--line); padding: var(--s6); display: grid; place-items: center; min-height: 220px; position: relative; }
+.logo-caixa img { width: min(240px, 80%); height: auto; }
+.logo-caixa.claro { background: #FFFFFF; }
+.logo-caixa.escuro { background: var(--agua-preta); border-color: var(--agua-preta); }
+.logo-caixa figcaption { position: absolute; left: var(--s4); bottom: var(--s3); font-family: var(--font-destaque); font-size: 12px; color: #7A6F64; }
+.logo-caixa.escuro figcaption { color: var(--rio-muted); }
+.regras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); margin-top: var(--s5); }
+.regra { display: grid; gap: 6px; padding: var(--s4) var(--s5); border-radius: var(--r-card); background: var(--surface); border: 1px solid var(--line); font-size: 15px; }
+.regra b { font-family: var(--font-destaque); font-size: 13px; font-weight: 600; }
+.regra.sim b { color: var(--ok); }
+.regra.nao b { color: var(--crit); }
+.regra ul { margin: 0; padding-left: 18px; color: var(--muted); display: grid; gap: 4px; }
+
+/* Componentes */
+.vitrine { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s5); display: flex; flex-wrap: wrap; gap: var(--s4); align-items: center; }
+.btn {
+  --btn-bg: var(--accent); --btn-fg: var(--on-accent);
+  position: relative; overflow: hidden; isolation: isolate;
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-destaque); font-weight: 600; font-size: 15px; letter-spacing: .01em;
+  padding: 13px 22px; border-radius: var(--r-campo); border: 1.5px solid transparent;
+  background: var(--btn-bg); color: var(--btn-fg); cursor: pointer; text-decoration: none;
+  transition: transform var(--dur-rapida) var(--ease-correnteza), box-shadow var(--dur-rapida), background var(--dur-rapida);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -12px color-mix(in srgb, var(--accent) 80%, transparent); }
+.btn:active { transform: translateY(0); }
+.btn .seta { transition: transform var(--dur-rapida) var(--ease-correnteza); }
+.btn:hover .seta { transform: translateX(4px); }
+.btn.sec { --btn-bg: transparent; --btn-fg: var(--fg); border-color: var(--fg); }
+.btn.sec:hover { box-shadow: none; background: color-mix(in srgb, var(--fg) 7%, transparent); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+.link-seta { font-family: var(--font-destaque); font-weight: 600; font-size: 15px; color: var(--accent-ink); text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; transition: background-size var(--dur-base) var(--ease-correnteza); padding-bottom: 2px; }
+.link-seta:hover { background-size: 100% 1.5px; }
+.banzeiro-onda { position: absolute; border-radius: 50%; pointer-events: none; z-index: -1; background: color-mix(in srgb, var(--btn-fg) 22%, transparent); transform: scale(0); animation: banzeiro 700ms var(--ease-correnteza) forwards; }
+
+.tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-destaque); font-weight: 500; font-size: 13px; padding: 6px 12px 6px 10px; border-radius: var(--r-pilula); border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); }
+.tag svg { width: 16px; height: 16px; color: var(--accent-ink); }
+
+.servicos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s4); }
+.servico {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s5);
+  display: grid; grid-template-rows: auto auto 1fr auto; gap: var(--s3); min-width: 0; position: relative; overflow: hidden;
+  transition: transform var(--dur-base) var(--ease-correnteza), box-shadow var(--dur-base), border-color var(--dur-base);
+}
+.servico::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-base) var(--ease-correnteza); }
+.servico:hover { transform: translateY(-4px); box-shadow: var(--sombra); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); }
+.servico:hover::after { transform: scaleX(1); }
+.servico .ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent-ink); }
+.servico .ic svg { width: 22px; height: 22px; }
+.servico h4 { font-size: 17px; font-weight: 700; }
+.servico p { font-size: 15px; color: var(--muted); line-height: 1.55; }
+
+.dupla { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s4); margin-top: var(--s4); }
+.painel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); padding: var(--s5); display: grid; gap: var(--s4); align-content: start; min-width: 0; }
+.painel-topo { display: flex; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; align-items: baseline; }
+.painel-topo h4 { font-size: 17px; font-weight: 700; }
+.exemplo { font-family: var(--font-destaque); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); padding: 2px 8px; border-radius: var(--r-pilula); }
+
+.rota { list-style: none; margin: 0; padding: 0; display: grid; }
+.rota li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: var(--s3); position: relative; padding-bottom: var(--s4); }
+.rota li:last-child { padding-bottom: 0; }
+.rota li::before { content: ""; position: absolute; left: 10px; top: 20px; bottom: -2px; width: 2px; background: var(--line); }
+.rota li:last-child::before { display: none; }
+.rota li.feito::before { background: var(--accent); }
+.rota .pt { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); background: var(--surface); margin-top: 2px; position: relative; z-index: 1; }
+.rota li.feito .pt { background: var(--accent); border-color: var(--accent); }
+.rota li.agora .pt { border-color: var(--accent); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); animation: pulso 2.2s ease-out infinite; }
+.rota b { font-family: var(--font-destaque); font-weight: 600; font-size: 15px; display: block; }
+.rota span { font-size: 14px; color: var(--muted); }
+.rota time { font-family: var(--font-destaque); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.status { font-family: var(--font-destaque); font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: var(--r-pilula); display: inline-flex; align-items: center; gap: 6px; }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.status.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.status.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 16%, transparent); }
+.status.crit { color: var(--crit); background: color-mix(in srgb, var(--crit) 14%, transparent); }
+
+form.orc { display: grid; gap: var(--s4); }
+.campo { display: grid; gap: 6px; min-width: 0; }
+.campo label, .campo legend { font-family: var(--font-destaque); font-weight: 500; font-size: 13px; }
+.campo input, .campo select {
+  font: inherit; font-size: 16px; color: var(--fg); background: var(--bg); width: 100%;
+  border: 1.5px solid var(--line); border-radius: var(--r-campo); padding: 10px 12px;
+  transition: border-color var(--dur-rapida), box-shadow var(--dur-rapida);
+}
+.campo input:focus, .campo select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent); }
+.linha2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s3); }
+fieldset.campo { border: 0; padding: 0; margin: 0; }
+.modais { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.modais input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.modais label { cursor: pointer; }
+.modais input:checked + .tag { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.modais input:checked + .tag svg { color: var(--on-accent); }
+.modais input:focus-visible + .tag { outline: 2px solid var(--accent); outline-offset: 2px; }
+.retorno { font-size: 14px; color: var(--ok); min-height: 1.4em; font-family: var(--font-destaque); }
+
+/* Animações — catálogo */
+.tokens-mov { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: var(--s3); margin-bottom: var(--s6); }
+.tokens-mov div { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-campo); padding: var(--s3) var(--s4); display: grid; gap: 2px; min-width: 0; }
+.tokens-mov code { font-size: 12px; color: var(--accent-ink); overflow-wrap: anywhere; }
+.tokens-mov span { font-family: var(--font-destaque); font-size: 14px; font-weight: 500; }
+.curva { height: 28px; width: 100%; color: var(--accent); }
+
+.anims { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); }
+.anim { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); display: grid; grid-template-rows: auto 1fr; overflow: hidden; min-width: 0; }
+.anim .palco { background: var(--surface-2); min-height: 200px; display: grid; place-items: center; padding: var(--s5); position: relative; overflow: hidden; }
+.anim .corpo { padding: var(--s5); display: grid; gap: var(--s3); align-content: start; min-width: 0; }
+.anim .cab { display: flex; justify-content: space-between; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.anim h4 { font-size: 19px; font-weight: 800; }
+.anim h4 small { font-family: var(--font-destaque); font-weight: 500; font-size: 13px; color: var(--muted); margin-left: 6px; }
+.anim p { font-size: 15px; color: var(--muted); }
+.anim dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px var(--s3); margin: 0; font-size: 13px; }
+.anim dt { font-family: var(--font-destaque); font-weight: 600; color: var(--muted); }
+.anim dd { margin: 0; font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; align-self: center; }
+.repetir { all: unset; cursor: pointer; font-family: var(--font-destaque); font-size: 13px; font-weight: 600; color: var(--accent-ink); display: inline-flex; gap: 6px; align-items: center; padding: 4px 10px; border-radius: var(--r-pilula); border: 1px solid var(--line); }
+.repetir:hover { background: var(--surface-2); }
+.repetir:focus-visible { outline: 2px solid var(--accent); }
+.repetir svg { width: 14px; height: 14px; }
+
+/* Peças de demonstração */
+.demo-titulo { display: grid; gap: 8px; width: 100%; max-width: 320px; }
+.demo-titulo .t-legenda { color: var(--accent-ink); }
+.demo-titulo h5 { margin: 0; font-family: var(--font-titulo); font-weight: 800; font-size: 26px; line-height: 1.1; }
+.demo-titulo .barra { height: 3px; width: 56px; background: var(--accent); }
+.demo-foto { width: 100%; max-width: 320px; aspect-ratio: 16/9; border-radius: 10px; position: relative; overflow: hidden; background: linear-gradient(180deg, #2A2018 0%, #5A3A22 38%, #E0A54B 52%, #3A2617 54%, #0F0D0B 100%); }
+.demo-foto::after { content: ""; position: absolute; inset: 54% 0 0; background: repeating-linear-gradient(180deg, rgb(224 165 75 / .35) 0 1px, transparent 1px 7px); mask: linear-gradient(90deg, transparent 20%, #000 45% 60%, transparent 85%); }
+.demo-foto span { position: absolute; left: 12px; bottom: 10px; font-family: var(--font-destaque); font-size: 12px; font-weight: 500; color: var(--rio-fg); z-index: 1; }
+.demo-texto { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: var(--s4); max-width: 320px; font-size: 15px; line-height: 1.55; }
+.demo-texto b { font-family: var(--font-destaque); font-weight: 600; display: block; margin-bottom: 4px; }
+.demo-comboio { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; width: 100%; }
+.demo-comboio div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 8px; display: grid; gap: 2px; min-width: 0; }
+.demo-comboio b { font-family: var(--font-destaque); font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.demo-comboio span { font-size: 11px; color: var(--muted); font-family: var(--font-destaque); }
+.demo-numeros { display: flex; flex-wrap: wrap; gap: var(--s5) var(--s6); justify-content: center; }
+.demo-numeros div { display: grid; gap: 2px; text-align: left; }
+.demo-numeros .t-num { font-size: 44px; }
+.demo-numeros span { font-family: var(--font-destaque); font-size: 12px; color: var(--muted); }
+.demo-encontro { width: 100%; height: 110px; border-radius: 10px; position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+.demo-encontro .esq, .demo-encontro .dir { position: absolute; top: 0; bottom: 0; width: 52%; }
+.demo-encontro .esq { left: 0; background: linear-gradient(90deg, var(--agua-preta), var(--tanino)); }
+.demo-encontro .dir { right: 0; background: linear-gradient(90deg, #B08A63, var(--solimoes)); }
+.demo-encontro .esq::after { content: ""; position: absolute; right: -10px; top: 0; bottom: 0; width: 20px; background: radial-gradient(circle at 0 50%, var(--tanino) 6px, transparent 7px) 0 0 / 20px 16px; }
+.demo-encontro span { position: absolute; bottom: 8px; font-family: var(--font-destaque); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; z-index: 1; }
+.demo-encontro span.a { left: 12px; color: var(--rio-fg); }
+.demo-encontro span.b { right: 12px; color: var(--agua-preta); }
+
+/* Keyframes da marca */
+@keyframes correnteza { from { opacity: 0; transform: translateX(-36px) skewX(-6deg); } to { opacity: 1; transform: none; } }
+@keyframes mare { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes mare-sobe { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes reflexo { from { opacity: 0; filter: blur(8px); transform: translateY(14px); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes comboio { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+@keyframes encontro-esq { from { transform: translateX(-102%); } to { transform: none; } }
+@keyframes encontro-dir { from { transform: translateX(102%); } to { transform: none; } }
+@keyframes banzeiro { to { transform: scale(1); opacity: 0; } }
+@keyframes pulso { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } 80%, 100% { box-shadow: 0 0 0 10px transparent; } }
+
+/* Aplicação nas demos: a classe .play é adicionada no carregamento e no botão Repetir */
+.play.anim-correnteza, .play .anim-correnteza { animation: correnteza var(--dur-base) var(--ease-correnteza) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+.play.anim-mare, .play .anim-mare { animation: mare var(--dur-lenta) var(--ease-mare) both; }
+.play.anim-reflexo, .play .anim-reflexo { animation: reflexo var(--dur-base) var(--ease-correnteza) both; animation-delay: calc(var(--i, 0) * 120ms); }
+.play.anim-comboio > *, .play .anim-comboio > * { animation: comboio var(--dur-base) var(--ease-correnteza) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+.play .esq { animation: encontro-esq var(--dur-lenta) var(--ease-mare) both; }
+.play .dir { animation: encontro-dir var(--dur-lenta) var(--ease-mare) both; }
+
+/* Código */
+.codigo { position: relative; margin-top: var(--s4); }
+.codigo pre { margin: 0; background: var(--code-bg); color: var(--code-fg); border-radius: var(--r-card); padding: var(--s5); padding-top: 44px; font-size: 13px; line-height: 1.6; overflow-x: auto; }
+.codigo .rot { position: absolute; top: 12px; left: var(--s5); font-family: var(--font-destaque); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #A79D91; }
+.codigo button { position: absolute; top: 8px; right: 8px; font-family: var(--font-destaque); font-size: 12px; font-weight: 600; background: rgb(239 230 216 / .1); color: var(--code-fg); border: 1px solid rgb(239 230 216 / .18); border-radius: var(--r-pilula); padding: 4px 12px; cursor: pointer; }
+.codigo button:hover { background: rgb(239 230 216 / .18); }
+.codigo .k { color: #E9B868; }
+.codigo .c { color: #8C8278; }
+
+.regras-mov { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); margin-top: var(--s5); }
+.regras-mov div { border-top: 2px solid var(--line); padding-top: var(--s3); display: grid; gap: 6px; align-content: start; }
+.regras-mov b { font-family: var(--font-destaque); font-weight: 600; font-size: 15px; }
+.regras-mov p { font-size: 15px; color: var(--muted); }
+
+/* Espaçamento */
+.espacos { display: grid; gap: 10px; }
+.espaco { display: grid; grid-template-columns: 70px 56px minmax(0, 1fr); gap: var(--s4); align-items: center; font-size: 13px; }
+.espaco code { color: var(--muted); font-size: 12px; }
+.espaco b { font-family: var(--font-destaque); font-weight: 600; font-variant-numeric: tabular-nums; }
+.espaco i { display: block; height: 12px; background: color-mix(in srgb, var(--accent) 70%, transparent); border-radius: 2px; }
+.raios { display: flex; flex-wrap: wrap; gap: var(--s5); margin-top: var(--s6); }
+.raios div { display: grid; gap: 8px; justify-items: start; font-size: 13px; }
+.raios i { display: block; width: 96px; height: 64px; background: var(--surface); border: 1.5px solid var(--accent); }
+.raios code { color: var(--muted); font-size: 12px; }
+
+/* Voz */
+.voz { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s4); }
+.voz .regra p { color: var(--fg); font-size: 16px; }
+.voz .regra span { color: var(--muted); font-size: 14px; }
+
+footer.fim { margin-top: var(--s8); background: var(--agua-preta); color: var(--rio-muted); font-size: 14px; }
+footer.fim .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s4); padding-block: var(--s6); }
+footer.fim b { color: var(--rio-fg); font-family: var(--font-titulo); }
+
+/* Responsivo */
+@media (max-width: 920px) {
+  .servicos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fontes, .conceito, .regras-mov { grid-template-columns: minmax(0, 1fr); }
+  .anims, .dupla { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); padding-block: 48px 40px; }
+  .regua { height: 220px; }
+  .logos, .regras, .voz { grid-template-columns: minmax(0, 1fr); }
+  .escala-linha { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  .topnav strong { display: none; }
+}
+@media (max-width: 480px) {
+  .servicos, .linha2 { grid-template-columns: minmax(0, 1fr); }
+  .demo-comboio { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body { font-size: 16px; }
+}
+
+/* Movimento reduzido: o conteúdo aparece direto, sem deslocamento */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}
+</style>
+
+<header class="topnav">
+  <div class="wrap">
+    <strong>Rio Negro <span>Log</span></strong>
+    <nav aria-label="Seções do guia">
+      <a href="#conceito">Conceito</a>
+      <a href="#cores">Cores</a>
+      <a href="#tipografia">Tipografia</a>
+      <a href="#logo">Logo</a>
+      <a href="#componentes">Componentes</a>
+      <a href="#animacoes">Animações</a>
+      <a href="#espaco">Espaço</a>
+      <a href="#voz">Voz</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" id="hero">
+  <canvas id="rio" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div>
+      <img class="logo anim-seq" style="--i:0" src="assets/logo-branca.png" alt="Rio Negro Log — 10 anos" width="300" height="188">
+      <span class="eyebrow anim-seq" style="--i:1">Guia de estilo · versão 1.0 · outubro de 2026</span>
+      <h1>
+        <span class="w anim-seq" style="--i:2">O Norte</span>
+        <span class="w anim-seq" style="--i:3">na palma</span>
+        <span class="w anim-seq" style="--i:4">da sua <em>mão.</em></span>
+      </h1>
+      <p class="lead anim-seq" style="--i:5">Cores, tipos, componentes e movimento para o site da Rio Negro Log. Tudo parte do rio que dá nome à empresa: a água escura de tanino, o sol dourado sobre ela e o caminho fluvial que liga Manaus ao interior.</p>
+      <div class="meta anim-seq" style="--i:6">
+        <span><b>Fluvial</b> · Rodoviário · Aéreo</span>
+        <span>Sede em <b>Manaus, AM</b></span>
+        <span><b>10 anos</b> de operação</span>
+      </div>
+    </div>
+    <div class="regua-col anim-seq" style="--i:3" aria-label="Régua de cota do Rio Negro, valor de exemplo">
+      <div class="regua">
+        <div class="regua-escala" id="escala"></div>
+        <div class="regua-tubo"><div class="regua-agua" id="agua"></div></div>
+      </div>
+      <div class="regua-leitura">
+        <div class="num"><span data-count="24.3" data-dec="1">24,3</span><small>m</small></div>
+        <p>Cota do Rio Negro no Porto de Manaus. Leitura de exemplo para ilustrar o grafismo da régua.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- CONCEITO -->
+  <section class="bloco wrap" id="conceito">
+    <div class="sec-head">
+      <span class="eyebrow">01 · Conceito</span>
+      <h2>Água preta, ouro e encontro</h2>
+      <p>A identidade traduz a experiência de quem navega o Rio Negro: superfícies escuras e calmas, reflexo dourado e a precisão de quem mede o rio todos os dias.</p>
+    </div>
+    <div class="conceito">
+      <div>
+        <h3>Água preta</h3>
+        <p>Fundos escuros e quentes, nunca preto puro. O Rio Negro tem cor de chá forte por causa dos taninos das folhas. É a base de faixas, rodapés e da abertura das páginas.</p>
+      </div>
+      <div>
+        <h3>Sol dourado</h3>
+        <p>O dourado do logotipo aparece como luz: em botões, números e linhas finas. Usado com economia, ele marca o que importa na tela, como uma ação, um prazo ou uma cota.</p>
+      </div>
+      <div>
+        <h3>Encontro das Águas</h3>
+        <p>O escuro do Negro corre ao lado do barrento do Solimões sem se misturar. Esse contraste vira divisor de seção, gradiente e animação de transição.</p>
+      </div>
+    </div>
+    <svg class="divisor-onda" viewBox="0 0 1200 18" preserveAspectRatio="none" aria-hidden="true"><path d="M0 9 Q 25 0 50 9 T 100 9 T 150 9 T 200 9 T 250 9 T 300 9 T 350 9 T 400 9 T 450 9 T 500 9 T 550 9 T 600 9 T 650 9 T 700 9 T 750 9 T 800 9 T 850 9 T 900 9 T 950 9 T 1000 9 T 1050 9 T 1100 9 T 1150 9 T 1200 9" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+  </section>
+
+  <!-- CORES -->
+  <section class="bloco wrap" id="cores">
+    <div class="sec-head">
+      <span class="eyebrow">02 · Cores</span>
+      <h2>Paleta do rio</h2>
+      <p>Seis cores de marca e três de estado. Clique no código para copiar. O dourado e o cinza-carvão vêm do logotipo atual e se mantêm; as demais cores foram tiradas do próprio rio.</p>
+    </div>
+    <div class="cores">
+      <div class="cor"><div class="amostra" style="--c:#0F0D0B"></div><div class="info"><b>Água Preta</b><button class="copiar-hex" data-hex="#0F0D0B">#0F0D0B</button><code>--agua-preta</code><span>Fundos de abertura, rodapé, tema escuro.</span></div></div>
+      <div class="cor"><div class="amostra" style="--c:#3A2617"></div><div class="info"><b>Tanino</b><button class="copiar-hex" data-hex="#3A2617">#3A2617</button><code>--tanino</code><span>Profundidade em gradientes da água.</span></div></div>
+      <div class="cor"><div class="amostra" style="--c:#E0A54B"></div><div class="info"><b>Ouro do Sol</b><button class="copiar-hex" data-hex="#E0A54B">#E0A54B</button><code>--ouro</code><span>Cor de ação: botões, destaques, cotas.</span></div></div>
+      <div class="cor"><div class="amostra" style="--c:#80653B"></div><div class="info"><b>Ouro Velho</b><button class="copiar-hex" data-hex="#80653B">#80653B</button><code>--ouro-fundo</code><span>Dourado envelhecido do site atual: bordas, ícones e fotos tratadas.</span></div></div>
+      <div class="cor"><div class="amostra" style="--c:#C8A27C"></div><div class="info"><b>Solimões</b><button class="copiar-hex" data-hex="#C8A27C">#C8A27C</button><code>--solimoes</code><span>Contraponto do Encontro das Águas.</span></div></div>
+      <div class="cor"><div class="amostra" style="--c:#373536"></div><div class="info"><b>Carvão</b><button class="copiar-hex" data-hex="#373536">#373536</button><code>--carvao</code><span>Cinza do logotipo, títulos sobre claro.</span></div></div>
+      <div class="cor"><div class="amostra borda" style="--c:#F7F4EF"></div><div class="info"><b>Praia</b><button class="copiar-hex" data-hex="#F7F4EF">#F7F4EF</button><code>--bg (claro)</code><span>Fundo das páginas no tema claro.</span></div></div>
+      <div class="cor"><div class="amostra" style="--c:#2E6B4F"></div><div class="info"><b>Mata</b><button class="copiar-hex" data-hex="#2E6B4F">#2E6B4F</button><code>--ok</code><span>Estado: entregue, confirmado.</span></div></div>
+      <div class="cor"><div class="amostra" style="--c:#B4432F"></div><div class="info"><b>Urucum</b><button class="copiar-hex" data-hex="#B4432F">#B4432F</button><code>--crit</code><span>Estado: atraso, erro no formulário.</span></div></div>
+    </div>
+
+    <div class="encontro-faixa" role="img" aria-label="Gradiente Encontro das Águas, do escuro ao barrento">
+      <span>Rio Negro</span><span>Rio Solimões</span>
+    </div>
+
+    <h3 class="sub">Proporção de uso</h3>
+    <div class="proporcao" aria-hidden="true">
+      <i style="flex:55;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)"></i>
+      <i style="flex:25;background:var(--agua-preta)"></i>
+      <i style="flex:10;background:var(--carvao)"></i>
+      <i style="flex:7;background:var(--ouro)"></i>
+      <i style="flex:3;background:var(--solimoes)"></i>
+    </div>
+    <div class="legenda-prop">
+      <span><i style="background:var(--bg);box-shadow:inset 0 0 0 1px var(--line)"></i>Praia 55%</span>
+      <span><i style="background:var(--agua-preta)"></i>Água Preta 25%</span>
+      <span><i style="background:var(--carvao)"></i>Carvão 10%</span>
+      <span><i style="background:var(--ouro)"></i>Ouro 7%</span>
+      <span><i style="background:var(--solimoes)"></i>Solimões 3%</span>
+    </div>
+
+    <h3 class="sub">Contraste aprovado</h3>
+    <div class="tab-wrap">
+      <table class="tab">
+        <thead><tr><th>Par</th><th>Combinação</th><th>Razão</th><th>Uso</th></tr></thead>
+        <tbody>
+          <tr><td><span class="par" style="background:#0F0D0B;color:#E0A54B">Aa</span></td><td>Ouro sobre Água Preta</td><td><span class="chip-contraste ok">8,9 : 1</span></td><td>Títulos e números na abertura</td></tr>
+          <tr><td><span class="par" style="background:#E0A54B;color:#1B1612">Aa</span></td><td>Tanino escuro sobre Ouro</td><td><span class="chip-contraste ok">8,3 : 1</span></td><td>Texto do botão primário</td></tr>
+          <tr><td><span class="par" style="background:#F7F4EF;color:#373536">Aa</span></td><td>Carvão sobre Praia</td><td><span class="chip-contraste ok">11,1 : 1</span></td><td>Texto corrido no tema claro</td></tr>
+          <tr><td><span class="par" style="background:#F7F4EF;color:#7A5A24">Aa</span></td><td>Ouro escuro sobre Praia</td><td><span class="chip-contraste ok">5,8 : 1</span></td><td>Links e rótulos no tema claro</td></tr>
+          <tr><td><span class="par" style="background:#F7F4EF;color:#E0A54B">Aa</span></td><td>Ouro sobre Praia</td><td><span class="chip-contraste lim">2,0 : 1</span></td><td>Só em formas e linhas, nunca em texto</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TIPOGRAFIA -->
+  <section class="bloco wrap" id="tipografia">
+    <div class="sec-head">
+      <span class="eyebrow">03 · Tipografia</span>
+      <h2>Montserrat fala alto, Poppins aponta</h2>
+      <p>Montserrat carrega os títulos com o peso geométrico do logotipo. Poppins entra nos destaques: números, botões, rótulos e chamadas. Nunito Sans deixa o texto longo leve de ler.</p>
+    </div>
+    <div class="fontes">
+      <div class="fonte">
+        <span class="papel">Títulos</span>
+        <div class="aa" style="font-family:var(--font-titulo);font-weight:800">Aa</div>
+        <h3 style="font-family:var(--font-titulo)">Montserrat</h3>
+        <p>Pesos 600 a 800. Caixa alta para títulos de impacto, como no “NEGRO LOG” do logotipo. Espaçamento levemente negativo em tamanhos grandes.</p>
+        <span class="pesos">600 · 700 · 800 · 700 itálico</span>
+      </div>
+      <div class="fonte">
+        <span class="papel">Destaques</span>
+        <div class="aa" style="font-family:var(--font-destaque);font-weight:600">Aa</div>
+        <h3 style="font-family:var(--font-destaque)">Poppins</h3>
+        <p>Pesos 500 e 600. Números de prazo e cota, botões, etiquetas de modal, menus e rótulos em caixa alta com espaçamento aberto.</p>
+        <span class="pesos">500 · 600 · algarismos tabulares</span>
+      </div>
+      <div class="fonte">
+        <span class="papel">Texto corrido</span>
+        <div class="aa" style="font-family:var(--font-texto);font-weight:400">Aa</div>
+        <h3 style="font-family:var(--font-texto)">Nunito Sans</h3>
+        <p>Pesos 400 e 600. Parágrafos, descrições de serviço e formulários. Linhas de até 65 caracteres.</p>
+        <span class="pesos">400 · 600</span>
+      </div>
+    </div>
+
+    <h3 class="sub">Escala</h3>
+    <div class="escala">
+      <div class="escala-linha"><div class="spec"><b>Display</b>Montserrat 800 · 64/1.02<br>caixa alta · −2%</div><div class="amostra t-display">Rio Negro Log</div></div>
+      <div class="escala-linha"><div class="spec"><b>Título 1</b>Montserrat 800 · 44/1.1</div><div class="amostra t-h1">Uma década conectando a região Norte</div></div>
+      <div class="escala-linha"><div class="spec"><b>Título 2</b>Montserrat 700 · 30/1.15</div><div class="amostra t-h2">Entregas no interior do Amazonas</div></div>
+      <div class="escala-linha"><div class="spec"><b>Título 3</b>Montserrat 600 · 21/1.25</div><div class="amostra t-h3">Retiradas em Manaus</div></div>
+      <div class="escala-linha"><div class="spec"><b>Número destaque</b>Poppins 600 · 52/1<br>tabular-nums</div><div class="amostra t-num">3<small>modais integrados</small></div></div>
+      <div class="escala-linha"><div class="spec"><b>Chamada</b>Poppins 500 · 20/1.45</div><div class="amostra t-chamada">Solicite um orçamento agora e <mark>deixe a logística com a gente.</mark></div></div>
+      <div class="escala-linha"><div class="spec"><b>Corpo</b>Nunito Sans 400 · 17/1.65</div><div class="amostra t-corpo">Coletamos sua carga em aeroportos, lojas e empresas na capital e levamos aos municípios do Amazonas por rio, estrada ou ar, com segurança e no prazo combinado.</div></div>
+      <div class="escala-linha"><div class="spec"><b>Rótulo</b>Poppins 600 · 12<br>caixa alta · +12%</div><div class="amostra t-legenda">Transporte multimodal</div></div>
+    </div>
+  </section>
+
+  <!-- LOGO -->
+  <section class="bloco wrap" id="logo">
+    <div class="sec-head">
+      <span class="eyebrow">04 · Logotipo</span>
+      <h2>Duas versões, um rio</h2>
+      <p>A versão colorida fica sobre fundos claros. A versão branca fica sobre Água Preta e sobre fotos escuras do rio.</p>
+    </div>
+    <div class="logos">
+      <figure class="logo-caixa claro" style="margin:0"><img src="assets/logo.png" alt="Logotipo Rio Negro Log colorido" width="300" height="188"><figcaption>Sobre fundo claro</figcaption></figure>
+      <figure class="logo-caixa escuro" style="margin:0"><img src="assets/logo-branca.png" alt="Logotipo Rio Negro Log em branco" width="300" height="188"><figcaption>Sobre Água Preta</figcaption></figure>
+    </div>
+    <div class="regras">
+      <div class="regra sim"><b>Faça</b><ul><li>Respeite uma margem livre igual à altura da palavra “LOG”.</li><li>Use no mínimo 120 px de largura na tela.</li><li>Mantenha o selo de 10 anos até o fim de 2026.</li></ul></div>
+      <div class="regra nao"><b>Evite</b><ul><li>Aplicar o logotipo colorido sobre fotos movimentadas.</li><li>Trocar o dourado por outra cor ou esticar a marca.</li><li>Animar o logotipo além de um fade simples.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- COMPONENTES -->
+  <section class="bloco wrap" id="componentes">
+    <div class="sec-head">
+      <span class="eyebrow">05 · Componentes</span>
+      <h2>Peças do site</h2>
+      <p>Botões, etiquetas de modal, cartões de serviço, rastreio e orçamento. Passe o mouse e clique para ver os estados.</p>
+    </div>
+
+    <div class="vitrine">
+      <button class="btn" data-banzeiro>Solicite um orçamento <span class="seta" aria-hidden="true">→</span></button>
+      <button class="btn sec" data-banzeiro>Conheça nossos serviços</button>
+      <a class="link-seta" href="#componentes">Saiba mais →</a>
+      <button class="btn" disabled>Indisponível</button>
+    </div>
+
+    <div class="vitrine" style="margin-top:var(--s4)">
+      <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15h18l-2.5 4h-13z"/><path d="M6 15V9h9v6"/><path d="M9 9V6h4"/><path d="M2 21c1.5 0 1.5-1 3-1s1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1"/></svg>Fluvial</span>
+      <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h12v10H2z"/><path d="M14 9h4l4 4v3h-8"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Rodoviário</span>
+      <span class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 13.5 3 11l1.5-1.5 7.5 1L17 5.5a2 2 0 0 1 3 3L15 13.5l1 7.5-1.5 1.5-2.5-7.5"/></svg>Aéreo</span>
+      <span class="status ok">Entregue</span>
+      <span class="status warn">Aguardando embarque</span>
+      <span class="status crit">Atrasado</span>
+    </div>
+
+    <h3 class="sub">Cartões de serviço</h3>
+    <div class="servicos">
+      <article class="servico">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></div>
+        <h4>Retiradas em Manaus</h4>
+        <p>Coletamos sua carga em aeroportos, lojas e empresas na capital com agilidade.</p>
+        <a class="link-seta" href="#componentes">Saiba mais →</a>
+      </article>
+      <article class="servico">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 15h18l-2.5 4h-13z"/><path d="M6 15V9h9v6"/><path d="M9 9V6h4"/></svg></div>
+        <h4>Entregas no Interior</h4>
+        <p>Levamos sua mercadoria aos municípios do Amazonas com segurança e no prazo.</p>
+        <a class="link-seta" href="#componentes">Saiba mais →</a>
+      </article>
+      <article class="servico">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h11"/><path d="M12 4l3 3-3 3"/><path d="M20 17H9"/><path d="M12 14l-3 3 3 3"/></svg></div>
+        <h4>Transporte Multimodal</h4>
+        <p>Rodoviário, fluvial ou aéreo: soluções completas para sua logística.</p>
+        <a class="link-seta" href="#componentes">Saiba mais →</a>
+      </article>
+      <article class="servico">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5"/><path d="M12 13v8"/></svg></div>
+        <h4>Pequenas Entregas</h4>
+        <p>Entregas rápidas em Manaus para pessoas físicas e jurídicas.</p>
+        <a class="link-seta" href="#componentes">Saiba mais →</a>
+      </article>
+    </div>
+
+    <div class="dupla">
+      <div class="painel">
+        <div class="painel-topo"><h4>Rastreio · RNL-48213</h4><span class="exemplo">Exemplo</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <span class="tag" style="padding-block:4px">Manaus → Tefé</span><span class="status warn">Em trânsito</span>
+        </div>
+        <ol class="rota">
+          <li class="feito"><span class="pt"></span><div><b>Coletado</b><span>Distrito Industrial, Manaus</span></div><time>06/10 · 09h20</time></li>
+          <li class="feito"><span class="pt"></span><div><b>Embarcado na balsa</b><span>Porto de Manaus</span></div><time>07/10 · 17h00</time></li>
+          <li class="agora"><span class="pt"></span><div><b>Navegando</b><span>Rio Solimões, próximo a Coari</span></div><time>09/10 · 08h45</time></li>
+          <li><span class="pt"></span><div><b>Entrega prevista</b><span>Tefé, AM</span></div><time>11/10</time></li>
+        </ol>
+      </div>
+      <div class="painel">
+        <div class="painel-topo"><h4>Pedido de orçamento</h4><span class="exemplo">Exemplo</span></div>
+        <form class="orc" id="orc" novalidate>
+          <div class="linha2">
+            <div class="campo"><label for="origem">Origem</label><input id="origem" value="Manaus, AM"></div>
+            <div class="campo"><label for="destino">Destino</label>
+              <select id="destino"><option>Parintins</option><option>Itacoatiara</option><option selected>Tefé</option><option>Coari</option><option>Manacapuru</option></select></div>
+          </div>
+          <fieldset class="campo"><legend>Modal</legend>
+            <div class="modais">
+              <label><input type="radio" name="modal" id="m-fluvial" checked><span class="tag">Fluvial</span></label>
+              <label><input type="radio" name="modal" id="m-rodo"><span class="tag">Rodoviário</span></label>
+              <label><input type="radio" name="modal" id="m-aereo"><span class="tag">Aéreo</span></label>
+            </div>
+          </fieldset>
+          <div class="campo"><label for="peso">Peso estimado (kg)</label><input id="peso" type="number" inputmode="decimal" value="850" min="1"></div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+            <button class="btn" type="submit" data-banzeiro>Solicitar orçamento <span class="seta" aria-hidden="true">→</span></button>
+            <span class="retorno" id="retorno" role="status"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANIMAÇÕES -->
+  <section class="bloco wrap" id="animacoes">
+    <div class="sec-head">
+      <span class="eyebrow">06 · Animações de exibição</span>
+      <h2>O movimento segue a correnteza</h2>
+      <p>Sete animações com nomes do rio. Elementos entram da esquerda para a direita, como a correnteza, e sobem de baixo para cima, como a cheia. Use “Repetir” para rever cada uma.</p>
+    </div>
+
+    <div class="tokens-mov">
+      <div><span>Rápida · 200 ms</span><code>--dur-rapida</code></div>
+      <div><span>Base · 600 ms</span><code>--dur-base</code></div>
+      <div><span>Lenta · 900 ms</span><code>--dur-lenta</code></div>
+      <div><span>Intervalo em cascata · 90 ms</span><code>--stagger</code></div>
+      <div><span>Correnteza</span><svg class="curva" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 27 C 22 5, 24 1, 100 1" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><code>cubic-bezier(.22,.8,.24,1)</code></div>
+      <div><span>Maré</span><svg class="curva" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><path d="M0 27 C 65 27, 35 1, 100 1" fill="none" stroke="currentColor" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><code>cubic-bezier(.65,0,.35,1)</code></div>
+    </div>
+
+    <div class="anims">
+      <article class="anim">
+        <div class="palco"><div class="demo-titulo play" data-stage>
+          <span class="t-legenda anim-correnteza" style="--i:0">Nossos serviços</span>
+          <h5 class="anim-correnteza" style="--i:1">Entregas no Interior</h5>
+          <span class="barra anim-correnteza" style="--i:2"></span>
+        </div></div>
+        <div class="corpo">
+          <div class="cab"><h4>Correnteza <small>títulos</small></h4><button class="repetir" data-replay><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Repetir</button></div>
+          <p>Desliza da esquerda com leve inclinação, como algo levado pela água. Para títulos, rótulos e a linha dourada que os acompanha.</p>
+          <dl><dt>Duração</dt><dd>--dur-base · cascata 90 ms</dd><dt>Curva</dt><dd>--ease-correnteza</dd><dt>Distância</dt><dd>36px, skewX(−6°)</dd></dl>
+        </div>
+      </article>
+
+      <article class="anim">
+        <div class="palco"><div class="demo-foto anim-mare play" data-stage><span>Porto de Manaus · 05h50</span></div></div>
+        <div class="corpo">
+          <div class="cab"><h4>Maré <small>imagens</small></h4><button class="repetir" data-replay><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Repetir</button></div>
+          <p>A imagem é revelada de baixo para cima, como o nível do rio subindo na régua. Para fotos, mapas e blocos de destaque grandes.</p>
+          <dl><dt>Duração</dt><dd>--dur-lenta</dd><dt>Curva</dt><dd>--ease-mare</dd><dt>Técnica</dt><dd>clip-path: inset()</dd></dl>
+        </div>
+      </article>
+
+      <article class="anim">
+        <div class="palco"><div class="play" data-stage style="display:grid;gap:10px;width:100%;max-width:320px">
+          <div class="demo-texto anim-reflexo" style="--i:0"><b>Rotas integradas</b>Nossa expertise em transporte rodofluvial garante o escoamento seguro e ágil da sua produção.</div>
+          <div class="demo-texto anim-reflexo" style="--i:1"><b>Frota própria</b>Barcos, balsas e caminhões dimensionados para empresas.</div>
+        </div></div>
+        <div class="corpo">
+          <div class="cab"><h4>Reflexo <small>textos</small></h4><button class="repetir" data-replay><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Repetir</button></div>
+          <p>Surge desfocado e ganha nitidez, como um reflexo na água escura que se acalma. Para parágrafos e cartões de texto.</p>
+          <dl><dt>Duração</dt><dd>--dur-base · cascata 120 ms</dd><dt>Curva</dt><dd>--ease-correnteza</dd><dt>Desfoque</dt><dd>8px → 0, subida de 14px</dd></dl>
+        </div>
+      </article>
+
+      <article class="anim">
+        <div class="palco"><div class="demo-comboio anim-comboio play" data-stage>
+          <div style="--i:0"><b>Manaus</b><span>Saída</span></div>
+          <div style="--i:1"><b>Itacoatiara</b><span>Parada</span></div>
+          <div style="--i:2"><b>Parintins</b><span>Parada</span></div>
+          <div style="--i:3"><b>Santarém</b><span>Destino</span></div>
+        </div></div>
+        <div class="corpo">
+          <div class="cab"><h4>Comboio <small>listas e grades</small></h4><button class="repetir" data-replay><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Repetir</button></div>
+          <p>Itens entram em fila, um após o outro, como balsas puxadas por um empurrador. Para cartões de serviço, etapas de rota e logos de clientes.</p>
+          <dl><dt>Duração</dt><dd>--dur-base por item</dd><dt>Intervalo</dt><dd>--stagger (90 ms), máximo 6 itens</dd><dt>Distância</dt><dd>24px</dd></dl>
+        </div>
+      </article>
+
+      <article class="anim">
+        <div class="palco"><div class="demo-numeros" data-stage data-count-stage>
+          <div><span class="t-num" data-count="10">10</span><span>anos de operação</span></div>
+          <div><span class="t-num" data-count="3">3</span><span>modais integrados</span></div>
+          <div><span class="t-num"><span data-count="24.3" data-dec="1">24,3</span><small>m</small></span><span>cota de exemplo</span></div>
+        </div></div>
+        <div class="corpo">
+          <div class="cab"><h4>Cota <small>números</small></h4><button class="repetir" data-replay><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Repetir</button></div>
+          <p>O número sobe até o valor final, como a leitura da régua do porto. Sempre em Poppins com algarismos tabulares, para a largura não pular.</p>
+          <dl><dt>Duração</dt><dd>1.200 ms</dd><dt>Curva</dt><dd>easeOutCubic (JS)</dd><dt>Formato</dt><dd>pt-BR, vírgula decimal</dd></dl>
+        </div>
+      </article>
+
+      <article class="anim">
+        <div class="palco"><div class="demo-encontro play" data-stage>
+          <div class="esq"></div><div class="dir"></div>
+          <span class="a">Negro</span><span class="b">Solimões</span>
+        </div></div>
+        <div class="corpo">
+          <div class="cab"><h4>Encontro <small>transições</small></h4><button class="repetir" data-replay><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Repetir</button></div>
+          <p>Duas águas chegam de lados opostos e param lado a lado, sem se misturar. Para divisores de seção, troca de página e telas de carregamento.</p>
+          <dl><dt>Duração</dt><dd>--dur-lenta</dd><dt>Curva</dt><dd>--ease-mare</dd><dt>Uso</dt><dd>no máximo 1 por página</dd></dl>
+        </div>
+      </article>
+
+      <article class="anim">
+        <div class="palco"><button class="btn" data-banzeiro>Clique aqui <span class="seta" aria-hidden="true">→</span></button></div>
+        <div class="corpo">
+          <div class="cab"><h4>Banzeiro <small>cliques</small></h4></div>
+          <p>A onda que um barco deixa ao passar. Uma ondulação parte do ponto do clique em botões e cartões clicáveis. Clique no botão ao lado para testar.</p>
+          <dl><dt>Duração</dt><dd>700 ms</dd><dt>Curva</dt><dd>--ease-correnteza</dd><dt>Cor</dt><dd>texto do botão a 22%</dd></dl>
+        </div>
+      </article>
+
+      <article class="anim">
+        <div class="palco"><div style="display:grid;gap:12px;justify-items:start;width:100%;max-width:300px">
+          <ol class="rota" style="width:100%">
+            <li class="feito"><span class="pt"></span><div><b>Embarcado</b><span>Porto de Manaus</span></div></li>
+            <li class="agora"><span class="pt"></span><div><b>Navegando</b><span>Rio Amazonas</span></div></li>
+          </ol>
+        </div></div>
+        <div class="corpo">
+          <div class="cab"><h4>Farol <small>estado ativo</small></h4></div>
+          <p>Um pulso suave e contínuo no ponto da etapa atual do rastreio. É a única animação em laço do site; todas as outras rodam uma vez.</p>
+          <dl><dt>Duração</dt><dd>2.200 ms, infinito</dd><dt>Curva</dt><dd>ease-out</dd><dt>Uso</dt><dd>só no status “agora”</dd></dl>
+        </div>
+      </article>
+    </div>
+
+    <div class="codigo">
+      <span class="rot">CSS · animações de exibição ao rolar</span>
+      <button type="button" data-copy="css-anim">Copiar</button>
+<pre id="css-anim"><code><span class="c">/* Só esconde quando o JS está ativo: sem JS, tudo aparece */</span>
+<span class="k">.js</span> [data-anim] { opacity: 0; }
+<span class="k">.js</span> [data-anim].is-visible { animation-duration: var(--dur-base); animation-timing-function: var(--ease-correnteza); animation-fill-mode: both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+[data-anim="correnteza"].is-visible { animation-name: correnteza; }
+[data-anim="reflexo"].is-visible    { animation-name: reflexo; }
+[data-anim="mare"].is-visible       { animation-name: mare; animation-duration: var(--dur-lenta); animation-timing-function: var(--ease-mare); }
+
+<span class="k">@keyframes</span> correnteza { from { opacity: 0; transform: translateX(-36px) skewX(-6deg); } to { opacity: 1; transform: none; } }
+<span class="k">@keyframes</span> reflexo    { from { opacity: 0; filter: blur(8px); transform: translateY(14px); } to { opacity: 1; filter: blur(0); transform: none; } }
+<span class="k">@keyframes</span> mare       { from { clip-path: inset(100% 0 0 0); opacity: 1; } to { clip-path: inset(0); opacity: 1; } }
+
+<span class="k">@media</span> (prefers-reduced-motion: reduce) {
+  <span class="k">.js</span> [data-anim] { opacity: 1; animation: none !important; }
+}</code></pre>
+    </div>
+    <div class="codigo">
+      <span class="rot">JS · gatilho por rolagem</span>
+      <button type="button" data-copy="js-anim">Copiar</button>
+<pre id="js-anim"><code>document.documentElement.classList.add(<span class="k">'js'</span>);
+<span class="k">const</span> io = <span class="k">new</span> IntersectionObserver((entradas) =&gt; {
+  entradas.forEach((e) =&gt; {
+    <span class="k">if</span> (!e.isIntersecting) <span class="k">return</span>;
+    e.target.classList.add(<span class="k">'is-visible'</span>);
+    io.unobserve(e.target);              <span class="c">// anima uma vez só</span>
+  });
+}, { rootMargin: <span class="k">'0px 0px -12% 0px'</span> });
+document.querySelectorAll(<span class="k">'[data-anim]'</span>).forEach((el) =&gt; io.observe(el));
+
+<span class="c">// Comboio: numere os filhos para a cascata</span>
+document.querySelectorAll(<span class="k">'[data-comboio]'</span>).forEach((lista) =&gt;
+  [...lista.children].forEach((item, i) =&gt; {
+    item.dataset.anim = <span class="k">'correnteza'</span>;
+    item.style.setProperty(<span class="k">'--i'</span>, Math.min(i, 5));
+  }));</code></pre>
+    </div>
+
+    <div class="regras-mov">
+      <div><b>Uma vez, na entrada</b><p>Cada elemento anima uma única vez, quando entra na tela. Ao voltar a rolagem, ele já está no lugar.</p></div>
+      <div><b>Um protagonista por tela</b><p>Use uma animação de destaque por dobra da página. O resto entra com Reflexo, mais discreto.</p></div>
+      <div><b>Movimento reduzido</b><p>Se o sistema pedir menos movimento, o conteúdo aparece direto, sem deslocamento nem desfoque.</p></div>
+    </div>
+  </section>
+
+  <!-- ESPAÇO -->
+  <section class="bloco wrap" id="espaco">
+    <div class="sec-head">
+      <span class="eyebrow">07 · Espaço e forma</span>
+      <h2>Ritmo de 4 em 4</h2>
+      <p>Todo espaçamento é múltiplo de 4 px. Cantos discretos: campos com 6 px, cartões com 12 px, etiquetas em pílula.</p>
+    </div>
+    <div class="espacos" id="espacos"></div>
+    <div class="raios">
+      <div><i style="border-radius:6px"></i><code>--r-campo · 6px</code></div>
+      <div><i style="border-radius:12px"></i><code>--r-card · 12px</code></div>
+      <div><i style="border-radius:999px;width:120px;height:40px"></i><code>--r-pilula</code></div>
+    </div>
+  </section>
+
+  <!-- VOZ -->
+  <section class="bloco wrap" id="voz">
+    <div class="sec-head">
+      <span class="eyebrow">08 · Voz</span>
+      <h2>Fala de quem conhece o rio</h2>
+      <p>Direta, segura e regional sem exagero. Diga para onde a carga vai, por qual modal e em quanto tempo.</p>
+    </div>
+    <div class="voz">
+      <div class="regra sim"><b>Assim</b><p>“Sua carga sai de Manaus na balsa de quinta e chega a Tefé no domingo.”</p><span>Concreto: dia, modal e destino.</span></div>
+      <div class="regra nao"><b>Não assim</b><p>“Soluções logísticas inovadoras e disruptivas para o seu negócio.”</p><span>Genérico, serve para qualquer empresa.</span></div>
+      <div class="regra sim"><b>Assim</b><p>“Na seca, alguns trechos ficam mais lentos. Avisamos o novo prazo antes do embarque.”</p><span>Fala do rio com franqueza.</span></div>
+      <div class="regra nao"><b>Não assim</b><p>“Ops! Algo deu errado 😕”</p><span>Mensagem de erro deve dizer o que houve e o que fazer.</span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="fim">
+  <div class="wrap">
+    <span><b>Rio Negro Log</b> · Rua Santo Antônio, 405 · Santo Antônio · Manaus, AM</span>
+    <span>Guia de estilo v1.0 · outubro de 2026</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt = function (v, dec) { return v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec }); };
+
+  /* Contadores (Cota) */
+  function contar(el) {
+    var alvo = parseFloat(el.dataset.count), dec = parseInt(el.dataset.dec || '0', 10);
+    if (reduz) { el.textContent = fmt(alvo, dec); return; }
+    var t0 = null, dur = 1200;
+    function passo(t) {
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(alvo * e, dec);
+      if (p < 1) requestAnimationFrame(passo);
+    }
+    requestAnimationFrame(passo);
+  }
+
+  /* Repetir demos */
+  function tocar(stage) {
+    stage.classList.remove('play');
+    void stage.offsetWidth;
+    stage.classList.add('play');
+    stage.querySelectorAll('[data-count]').forEach(contar);
+  }
+  document.querySelectorAll('[data-replay]').forEach(function (b) {
+    b.addEventListener('click', function () { tocar(b.closest('.anim').querySelector('[data-stage]')); });
+  });
+
+  /* Abertura */
+  var hero = document.getElementById('hero');
+  hero.classList.add('play');
+  hero.querySelectorAll('[data-count]').forEach(contar);
+  document.querySelectorAll('[data-count-stage] [data-count]').forEach(contar);
+
+  /* Régua de cota: uma escala só para marcas, rótulos e água */
+  var MIN = 10, MAX = 32, LEITURA = 24.3;
+  var pos = function (v) { return (v - MIN) / (MAX - MIN) * 100; };
+  var escala = document.getElementById('escala');
+  [[12.11, 'mín. 12,11 m (2024)', true], [16, '16 m'], [20, '20 m'], [24, '24 m'], [30.02, 'máx. 30,02 m (2021)', true]].forEach(function (m) {
+    var s = document.createElement('span');
+    s.textContent = m[1];
+    if (m[2]) s.className = 'rec';
+    s.style.bottom = pos(m[0]) + '%';
+    escala.appendChild(s);
+  });
+  document.getElementById('agua').style.setProperty('--nivel', pos(LEITURA) + '%');
+
+  /* Banzeiro */
+  document.querySelectorAll('[data-banzeiro]').forEach(function (btn) {
+    btn.addEventListener('pointerdown', function (ev) {
+      if (reduz) return;
+      var r = btn.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2.2;
+      var o = document.createElement('span');
+      o.className = 'banzeiro-onda';
+      o.style.width = o.style.height = d + 'px';
+      o.style.left = (ev.clientX - r.left - d / 2) + 'px';
+      o.style.top = (ev.clientY - r.top - d / 2) + 'px';
+      btn.appendChild(o);
+      o.addEventListener('animationend', function () { o.remove(); });
+    });
+  });
+
+  /* Formulário de exemplo */
+  document.getElementById('orc').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var dest = document.getElementById('destino').value;
+    var modal = document.querySelector('input[name="modal"]:checked').nextElementSibling.textContent;
+    var peso = document.getElementById('peso').value || '0';
+    document.getElementById('retorno').textContent = 'Exemplo: Manaus → ' + dest + ', ' + modal.toLowerCase() + ', ' + peso + ' kg.';
+  });
+
+  /* Copiar */
+  function copiar(txt, el, ok) {
+    var fim = function () { var a = el.textContent; el.textContent = ok; setTimeout(function () { el.textContent = a; }, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(fim).catch(function () { selecionar(el); });
+    } else selecionar(el);
+  }
+  function selecionar(el) {
+    var alvo = el.dataset.copy ? document.getElementById(el.dataset.copy) : el;
+    var r = document.createRange(); r.selectNodeContents(alvo);
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  document.querySelectorAll('.copiar-hex').forEach(function (b) {
+    b.addEventListener('click', function () { copiar(b.dataset.hex, b, 'Copiado'); });
+  });
+  document.querySelectorAll('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () { copiar(document.getElementById(b.dataset.copy).textContent, b, 'Copiado'); });
+  });
+
+  /* Espaçamentos */
+  var esp = document.getElementById('espacos');
+  [['--s1', 4], ['--s2', 8], ['--s3', 12], ['--s4', 16], ['--s5', 24], ['--s6', 32], ['--s7', 48], ['--s8', 72]].forEach(function (s) {
+    var l = document.createElement('div'); l.className = 'espaco';
+    l.innerHTML = '<code>' + s[0] + '</code><b>' + s[1] + ' px</b><i style="width:' + Math.min(s[1] * 4, 100) + '%;max-width:' + (s[1] * 4) + 'px"></i>';
+    esp.appendChild(l);
+  });
+
+  /* Rio na abertura: linhas de reflexo dourado */
+  var cv = document.getElementById('rio'), ctx = cv.getContext('2d');
+  var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function medir() { W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  function desenhar(t) {
+    ctx.clearRect(0, 0, W, H);
+    var linhas = 16, topo = H * 0.42;
+    for (var i = 0; i < linhas; i++) {
+      var k = i / (linhas - 1), y = topo + Math.pow(k, 1.6) * (H - topo);
+      var amp = 2 + k * 6, comp = 140 + k * 220, vel = 0.00025 + k * 0.0004;
+      ctx.beginPath();
+      for (var x = 0; x <= W; x += 8) {
+        var yy = y + Math.sin(x / comp * Math.PI * 2 + t * vel * 6 + i) * amp;
+        x === 0 ? ctx.moveTo(x, yy) : ctx.lineTo(x, yy);
+      }
+      var g = ctx.createLinearGradient(0, 0, W, 0);
+      var a = 0.05 + k * 0.16;
+      g.addColorStop(0, 'rgba(224,165,75,0)');
+      g.addColorStop(0.62, 'rgba(224,165,75,' + a + ')');
+      g.addColorStop(0.78, 'rgba(224,165,75,' + (a * 1.6) + ')');
+      g.addColorStop(1, 'rgba(224,165,75,0)');
+      ctx.strokeStyle = g; ctx.lineWidth = 1 + k * 0.6; ctx.stroke();
+    }
+  }
+  medir();
+  window.addEventListener('resize', function () { medir(); if (reduz) desenhar(0); });
+  if (reduz) desenhar(0);
+  else (function loop(t) { desenhar(t); requestAnimationFrame(loop); })(0);
+})();
+</script>

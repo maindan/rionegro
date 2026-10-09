@@ -1,0 +1,9 @@
+# Export antigo do site em WordPress (tem páginas de spam; não versionar)
+current/
+
+# Arquivos temporários e do sistema
+.tmp-teste/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
